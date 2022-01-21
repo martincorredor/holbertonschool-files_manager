@@ -1,40 +1,39 @@
-import expres from 'express';
+import express from 'express';
 import AppController from '../controllers/AppController';
+import UsersController from '../controllers/UsersController';
 import AuthController from '../controllers/AuthController';
 import FilesController from '../controllers/FilesController';
-import UsersController from '../controllers/UsersController';
 
-const router = expres.Router();
+function controllerRouting(app) {
+  const router = express.Router();
+  app.use('/', router);
 
-router.get('/', (request, response) => {
-  response.send('Welcome to Files Manager App!');
-});
-router.get('/status', AppController.getStatus);
-router.get('/stats', AppController.getStats);
+  router.get('/status', (req, res) => {
+    AppController.getStatus(req, res);
+  });
 
-// User Controller
+  router.get('/stats', (req, res) => {
+    AppController.getStats(req, res);
+  });
 
-router.post('/users', UsersController.postNew);
-router.get('/users/me', UsersController.getMe);
+  router.post('/users', (req, res) => {
+    UsersController.postNew(req, res);
+  });
 
-// User Authentication
+  router.get('/connect', (req, res) => {
+    AuthController.getConnect(req, res);
+  });
 
-router.get('/connect', AuthController.getConnect);
-router.get('/disconnect', AuthController.getDisconnect);
+  router.get('/disconnect', (req, res) => {
+    AuthController.getDisconnect(req, res);
+  });
 
-// POST files
+  router.get('/users/me', (req, res) => {
+    AuthController.getMe(req, res);
+  });
+  router.post('/files', (req, res) => {
+    FilesController.postUpload(req, res);
+  });
+}
 
-router.post('/files', FilesController.postUpload);
-
-// GET files
-
-router.get('/files/:id', FilesController.getShow);
-router.get('/files', FilesController.getIndex);
-router.get('/files/:id/data', FilesController.getFile);
-
-// PUT files
-
-router.put('/files/:id/publish', FilesController.putPublish);
-router.put('/files/:id/unpublish', FilesController.putUnpublish);
-
-export default router;
+export default controllerRouting;
